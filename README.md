@@ -1,6 +1,6 @@
 ## checkpoint_hit_count_extractor
 
-It's a Bash script that extracts the hit count of rules in a specific policy package of a Checkpoint firewall. This is script is tested on R80+ an R81+ series OS.
+It's a Bash script that extracts the hit count of rules in a specific policy package of a Checkpoint firewall. This is script is tested on R80+ and R81+ series GAIA OS.
 
 ![image](https://user-images.githubusercontent.com/75925433/222898437-29805e89-d623-40dd-aba3-ebc0d5cbf82a.png)
 
