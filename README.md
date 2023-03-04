@@ -35,6 +35,9 @@ Based on the user's selection, the script uses the "show access-rulebase" comman
 
 ![image](https://user-images.githubusercontent.com/75925433/222902245-aa86a526-7298-4c0f-b870-73ca71fca778.png)
 
+> **Note:**
+    *No. of rules are mandatory to be mentioned because by default Checkpoint scan only first 500 rules. So, in order to scan more than default number or all it is required to specify number of rules.*
+
 The CSV file contains three columns: **Rule Number, Hits and Traffic-level**. 
 
 ```
