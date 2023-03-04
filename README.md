@@ -33,6 +33,8 @@ The user is then prompted to select one of the following options:
 ```
 Based on the user's selection, the script uses the "show access-rulebase" command to extract the hit count of the rules in the specified policy package. The output is saved in a CSV file named "<Policy_Package_Name>-<Today's_Date>.csv".
 
+![image](https://user-images.githubusercontent.com/75925433/222902245-aa86a526-7298-4c0f-b870-73ca71fca778.png)
+
 The CSV file contains three columns: **Rule Number, Hits and Traffic-level**. 
 
 ```
