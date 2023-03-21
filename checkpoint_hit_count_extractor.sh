@@ -41,7 +41,6 @@ printf "Press ENTER to continue..."
 read ANYKEY
 printf "\nProvide IP address or Name of the Domain or SMS you want to check: "
 read DOMAIN
-sleep 2
 
 printf "\nListing all available Policy Package Names...\n"
 sleep 2
