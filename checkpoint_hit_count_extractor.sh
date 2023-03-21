@@ -36,7 +36,7 @@ printf  "  This script will search a specific policy package for hit count\n  on
 echo "+------------------------------------------------------------------+"
 
 printf "\n"
-sleep 2
+sleep 0.5
 printf "Press ENTER to continue..."
 read ANYKEY
 printf "\nProvide IP address or Name of the Domain or SMS you want to check: "
@@ -46,10 +46,25 @@ sleep 2
 printf "\nListing all available Policy Package Names...\n"
 sleep 2
 printf "\n"
-mgmt_cli -r true -d $DOMAIN show access-layers limit 500 --format json | jq --raw-output '."access-layers"[] | (.name)'
+access_layers=$(mgmt_cli -r true -d $DOMAIN show access-layers limit 500 --format json | jq --raw-output '."access-layers"[] | (.name)')
+printf "${MAGENTA}Available policy packages: \n${END}"
+printf "\n"
+echo "$access_layers"
 
-printf "\nSpecify Policy Package Name from the above list[mention full name]: "
-read POL_NAME
+# Loop until a valid access layer is selected
+while true; do
+  # Ask for input
+  printf "\n${GREEN}Specify Policy Package Name from the above list[mention full name]: ${END}"
+  read POL_NAME
+
+  # Check if the input is a valid access layer
+  if echo "$access_layers" | grep -q "^$POL_NAME$"; then
+    break
+  else
+    printf "\n"
+    echo "Error: Invalid input. Please select from the list above."
+  fi
+done
 POL2="$(echo $POL_NAME | sed -e 's/ /-/g')"
 printf "\nDetermining Rulesbase size...\n"
 printf "\n"
@@ -75,19 +90,19 @@ printf "\n"
 printf "Note: This may take time depending on the number of rules to scan. Please be patient..."
 echo
   if [ "$DISDEL" = "1" ]; then
-      echo Rule Number,Hits,Traffic-level > $POL2-$today.csv
-      time mgmt_cli -r true show access-rulebase name "$POL_NAME" details-level "standard" limit "$COUNT" use-object-dictionary true show-hits true --format json | jq  --raw-output '.rulebase[] | .rulebase[]? // . | "\(."rule-number"),\(.hits.value),\(.hits.level)"' >> $POL2-$today.csv
-  echo -n Successfully extracted data and saved with filname to the location ./$POL2-$today.csv.
+      echo Rule_Number,Name,Hits,Traffic-level,Rule_Comment > $POL2-$today.csv
+      time mgmt_cli -r true show access-rulebase name "$POL_NAME" details-level "standard" limit "$COUNT" use-object-dictionary true show-hits true --format json | jq  --raw-output '.rulebase[] | .rulebase[]? // . | "\(."rule-number"),\(.name),\(.hits.value),\(.hits.level),\(.comments)"' >> all-rules-$POL2-$today.csv
+  echo -n Successfully extracted data and saved with filname to the location ./all-rules-$POL2-$today.csv.
   fi
   if [ "$DISDEL" = "2" ]; then
-      echo Rule Number,Hits,Traffic-level > $POL2-$today.csv
-      time mgmt_cli -r true show access-rulebase name "$POL_NAME" details-level "standard" limit "$COUNT" use-object-dictionary true show-hits true --format json | jq  --raw-output '.rulebase[] | .rulebase[]? // . | select(.hits.value != 0) | "\(."rule-number"),\(.hits.value),\(.hits.level)"' >> $POL2-$today.csv
-  echo -n Successfully extracted data and and saved with filname to the location ./$POL2-$today.csv.
+      echo Rule_Number,Name,Hits,Traffic-level,Rule_Comment > $POL2-$today.csv
+      time mgmt_cli -r true show access-rulebase name "$POL_NAME" details-level "standard" limit "$COUNT" use-object-dictionary true show-hits true --format json | jq  --raw-output '.rulebase[] | .rulebase[]? // . | select(.hits.value != 0) | "\(."rule-number"),\(.name),\(.hits.value),\(.hits.level),\(.comments)"' >> non-zero-hit-rules-$POL2-$today.csv
+  echo -n Successfully extracted data and and saved with filname to the location ./non-zero-hit-rules-$POL2-$today.csv.
   fi
   if [ "$DISDEL" = "3" ]; then
-      echo Rule Number,Hits,Traffic-level > $POL2-$today.csv
-      time mgmt_cli -r true show access-rulebase name "$POL_NAME" details-level "standard" limit "$COUNT" use-object-dictionary true show-hits true --format json | jq  --raw-output '.rulebase[] | .rulebase[]? // . | select(.hits.value == 0) | "\(."rule-number"),\(.hits.value),\(.hits.level)"' >> $POL2-$today.csv
-  echo -n Successfully extracted data and saved with filname to the location ./$POL2-$today.csv.
+      echo Rule_Number,Name,Hits,Traffic-level,Rule_Comment > $POL2-$today.csv
+      time mgmt_cli -r true show access-rulebase name "$POL_NAME" details-level "standard" limit "$COUNT" use-object-dictionary true show-hits true --format json | jq  --raw-output '.rulebase[] | .rulebase[]? // . | select(.hits.value == 0) | "\(."rule-number"),\(.name),\(.hits.value),\(.hits.level),\(.comments)"' >> zero-hit-rules-$POL2-$today.csv
+  echo -n Successfully extracted data and saved with filname to the location ./zero-hit-rules-$POL2-$today.csv.
   fi
   echo
 exit 0
