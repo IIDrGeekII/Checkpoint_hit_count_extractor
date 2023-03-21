@@ -66,6 +66,7 @@ while true; do
   fi
 done
 POL2="$(echo $POL_NAME | sed -e 's/ /-/g')"
+clock="$(date | awk '{$1=""; print $4}' | sed 's/:/_/g')"
 printf "\nDetermining Rulesbase size...\n"
 printf "\n"
 total=$(mgmt_cli -r true -d $DOMAIN show access-rulebase name "$POL_NAME" --format json |jq '.total')
@@ -90,19 +91,19 @@ printf "\n"
 printf "Note: This may take time depending on the number of rules to scan. Please be patient..."
 echo
   if [ "$DISDEL" = "1" ]; then
-      echo Rule_Number,Name,Hits,Traffic-level,Rule_Comment > $POL2-$today.csv
-      time mgmt_cli -r true show access-rulebase name "$POL_NAME" details-level "standard" limit "$COUNT" use-object-dictionary true show-hits true --format json | jq  --raw-output '.rulebase[] | .rulebase[]? // . | "\(."rule-number"),\(.name),\(.hits.value),\(.hits.level),\(.comments)"' >> all-rules-$POL2-$today.csv
-  echo -n Successfully extracted data and saved with filname to the location ./all-rules-$POL2-$today.csv.
+      echo Rule_Number,Name,Hits,Traffic-level,Rule_Comment > all-rules-$POL2-$today-$clock.csv
+      time mgmt_cli -r true show access-rulebase name "$POL_NAME" details-level "standard" limit "$COUNT" use-object-dictionary true show-hits true --format json | jq  --raw-output '.rulebase[] | .rulebase[]? // . | "\(."rule-number"),\(.name),\(.hits.value),\(.hits.level),\(.comments)"' >> all-rules-$POL2-$today-$clock.csv
+  echo -n Successfully extracted data and saved with filname to the location ./all-rules-$POL2-$today-$clock.csv.
   fi
   if [ "$DISDEL" = "2" ]; then
-      echo Rule_Number,Name,Hits,Traffic-level,Rule_Comment > $POL2-$today.csv
-      time mgmt_cli -r true show access-rulebase name "$POL_NAME" details-level "standard" limit "$COUNT" use-object-dictionary true show-hits true --format json | jq  --raw-output '.rulebase[] | .rulebase[]? // . | select(.hits.value != 0) | "\(."rule-number"),\(.name),\(.hits.value),\(.hits.level),\(.comments)"' >> non-zero-hit-rules-$POL2-$today.csv
-  echo -n Successfully extracted data and and saved with filname to the location ./non-zero-hit-rules-$POL2-$today.csv.
+      echo Rule_Number,Name,Hits,Traffic-level,Rule_Comment > non-zero-hit-rules-$POL2-$today-$clock.csv
+      time mgmt_cli -r true show access-rulebase name "$POL_NAME" details-level "standard" limit "$COUNT" use-object-dictionary true show-hits true --format json | jq  --raw-output '.rulebase[] | .rulebase[]? // . | select(.hits.value != 0) | "\(."rule-number"),\(.name),\(.hits.value),\(.hits.level),\(.comments)"' >> non-zero-hit-rules-$POL2-$today-$clock.csv
+  echo -n Successfully extracted data and and saved with filname to the location ./non-zero-hit-rules-$POL2-$today-$clock.csv.
   fi
   if [ "$DISDEL" = "3" ]; then
-      echo Rule_Number,Name,Hits,Traffic-level,Rule_Comment > $POL2-$today.csv
-      time mgmt_cli -r true show access-rulebase name "$POL_NAME" details-level "standard" limit "$COUNT" use-object-dictionary true show-hits true --format json | jq  --raw-output '.rulebase[] | .rulebase[]? // . | select(.hits.value == 0) | "\(."rule-number"),\(.name),\(.hits.value),\(.hits.level),\(.comments)"' >> zero-hit-rules-$POL2-$today.csv
-  echo -n Successfully extracted data and saved with filname to the location ./zero-hit-rules-$POL2-$today.csv.
+      echo Rule_Number,Name,Hits,Traffic-level,Rule_Comment > zero-hit-rules-$POL2-$today-$clock.csv
+      time mgmt_cli -r true show access-rulebase name "$POL_NAME" details-level "standard" limit "$COUNT" use-object-dictionary true show-hits true --format json | jq  --raw-output '.rulebase[] | .rulebase[]? // . | select(.hits.value == 0) | "\(."rule-number"),\(.name),\(.hits.value),\(.hits.level),\(.comments)"' >> zero-hit-rules-$POL2-$today-$clock.csv
+  echo -n Successfully extracted data and saved with filname to the location ./zero-hit-rules-$POL2-$today-$clock.csv.
   fi
   echo
 exit 0
