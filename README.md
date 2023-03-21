@@ -38,12 +38,14 @@ Based on the user's selection, the script uses the "show access-rulebase" comman
 > **Note:**
     *No. of rules are mandatory to be mentioned because by default Checkpoint scan only first 500 rules. So, in order to scan more than default number or all it is required to specify number of rules.*
 
-The CSV file contains three columns: **Rule Number, Hits and Traffic-level**. 
+The CSV file contains 5 columns: **Rule_Number, Name, Hits, Traffic-level, Rule_Comment**. 
 
 ```
 1. The Rule Number column contains the rule number of each rule in the policy package.
-2. Hits column contains the number of times each rule was hit.
-3. Traffic-level column contains the level of hits each rule is having (zero,low,medium,high).
+2. The Name column contains the rule name which can be used to search later in case need to check manually on Smartconsole.
+3. Hits column contains the number of times each rule was hit.
+4. Traffic-level column contains the level of hits each rule is having (zero,low,medium,high).
+5. The Rule_Comment column contains the rule comments which can be used in case if rule name is missing to search later in case need to check manually on Smartconsole.
 ```
 
 The script uses the "jq" command-line tool to parse the JSON output of the **"mgmt_cli"** command and extract the relevant information.
@@ -68,5 +70,5 @@ Here is a step-by-step guide on how to use the script:
        the name of the policy package to check, and the type of rules to extract hit counts for.
 
     The script will output the results to a CSV file in the same directory as the script. 
-    The filename will be "<Policy_Package_Name>-<Today's_Date>.csv".
+    The filename will be "<Option>-<Policy_Package_Name>-<Today's_Date>.csv".
 
