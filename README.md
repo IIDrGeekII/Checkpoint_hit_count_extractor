@@ -22,7 +22,8 @@ customname1 Network
 customname2 Network
 customname3 application
 ```
-> *In such case while specifying policy package name, specify complete name like : customname1 Network*
+> *In such case while specifying policy package name, specify complete name like : "customname1 Network".* 
+> *The script will not move ahead until you put correct policy package name.*
 
 The user is then prompted to select one of the following options:
 
