@@ -71,5 +71,5 @@ Here is a step-by-step guide on how to use the script:
        the name of the policy package to check, and the type of rules to extract hit counts for.
 
     The script will output the results to a CSV file in the same directory as the script. 
-    The filename will be "<Option>-<Policy_Package_Name>-<Today's_Date>.csv".
+    The filename will be "<Option>-<Policy_Package_Name>-<Today's_Date_Time>.csv".
 
