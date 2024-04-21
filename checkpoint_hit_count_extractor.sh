@@ -77,9 +77,10 @@ printf "\nSpecify what is required to find:\n"
 
 printf "\n1. All Rules"
 printf "\n2. Non-Zero Hit Rules"
-printf "\n3. Zero Hit Rules"
+printf "\n3. Non-Zero Hit Rules with first and last hit"
+printf "\n4. Zero Hit Rules"
 printf "\n"
-printf "\nEnter your option[1/2/3]: "
+printf "\nEnter your option[1/2/3/4]: "
 read DISDEL
 printf "\n"
 printf "Enter total number of rules: "
@@ -90,19 +91,24 @@ printf "\n"
 printf "Note: This may take time depending on the number of rules to scan. Please be patient..."
 echo
   if [ "$DISDEL" = "1" ]; then
-      echo Rule_Number,Name,Hits,Traffic-level,Rule_Comment > all-rules-$POL2-$today-$clock.csv
-      time mgmt_cli -r true show access-rulebase name "$POL_NAME" details-level "standard" limit "$COUNT" use-object-dictionary true show-hits true --format json | jq  --raw-output '.rulebase[] | .rulebase[]? // . | "\(."rule-number"),\(.name),\(.hits.value),\(.hits.level),\(.comments)"' >> all-rules-$POL2-$today-$clock.csv
-  echo -n Successfully extracted data and saved with filname to the location ./all-rules-$POL2-$today-$clock.csv.
+      echo Rule_Number,Name,Hits,Traffic_level,First_Hit,Last_Hit,Rule_Comment > all-rules-$POL2-$today-$clock.csv
+      time mgmt_cli -r true show access-rulebase name "$POL_NAME" details-level "standard" limit "$COUNT" use-object-dictionary true show-hits true --format json | jq  --raw-output '.rulebase[] | .rulebase[]? // . | "\(."rule-number"),\(.name),\(.hits.value),\(.hits.level),\(.hits."first-date"."iso-8601"),\(.hits."last-date"."iso-8601"),\(.comments)"' >> all-rules-$POL2-$today-$clock.csv
+  echo -n Successfully extracted data and saved with filname to the location ./all-rules-$POL2-$today-$clock.csv
   fi
   if [ "$DISDEL" = "2" ]; then
-      echo Rule_Number,Name,Hits,Traffic-level,Rule_Comment > non-zero-hit-rules-$POL2-$today-$clock.csv
+      echo Rule_Number,Name,Hits,Traffic_level,Rule_Comment > non-zero-hit-rules-$POL2-$today-$clock.csv
       time mgmt_cli -r true show access-rulebase name "$POL_NAME" details-level "standard" limit "$COUNT" use-object-dictionary true show-hits true --format json | jq  --raw-output '.rulebase[] | .rulebase[]? // . | select(.hits.value != 0) | "\(."rule-number"),\(.name),\(.hits.value),\(.hits.level),\(.comments)"' >> non-zero-hit-rules-$POL2-$today-$clock.csv
-  echo -n Successfully extracted data and and saved with filname to the location ./non-zero-hit-rules-$POL2-$today-$clock.csv.
+  echo -n Successfully extracted data and and saved with filname to the location ./non-zero-hit-rules-$POL2-$today-$clock.csv
   fi
   if [ "$DISDEL" = "3" ]; then
-      echo Rule_Number,Name,Hits,Traffic-level,Rule_Comment > zero-hit-rules-$POL2-$today-$clock.csv
+      echo Rule_Number,Name,Hits,Traffic_level,First_Hit,Last_Hit,Rule_Comment > non-zero-hit-rules-with-first-and-last-hit-$POL2-$today-$clock.csv
+      time mgmt_cli -r true show access-rulebase name "$POL_NAME" details-level "standard" limit "$COUNT" use-object-dictionary true show-hits true --format json | jq  --raw-output '.rulebase[] | .rulebase[]? // . | select(.hits.value != 0) | "\(."rule-number"),\(.name),\(.hits.value),\(.hits.level),\(.hits."first-date"."iso-8601"),\(.hits."last-date"."iso-8601"),\(.comments)"' >> non-zero-hit-rules-with-first-and-last-hit-$POL2-$today-$clock.csv
+  echo -n Successfully extracted data and and saved with filname to the location ./non-zero-hit-rules-with-first-and-last-hit-$POL2-$today-$clock.csv
+  fi
+  if [ "$DISDEL" = "4" ]; then
+      echo Rule_Number,Name,Hits,Traffic_level,Rule_Comment > zero-hit-rules-$POL2-$today-$clock.csv
       time mgmt_cli -r true show access-rulebase name "$POL_NAME" details-level "standard" limit "$COUNT" use-object-dictionary true show-hits true --format json | jq  --raw-output '.rulebase[] | .rulebase[]? // . | select(.hits.value == 0) | "\(."rule-number"),\(.name),\(.hits.value),\(.hits.level),\(.comments)"' >> zero-hit-rules-$POL2-$today-$clock.csv
-  echo -n Successfully extracted data and saved with filname to the location ./zero-hit-rules-$POL2-$today-$clock.csv.
+  echo -n Successfully extracted data and saved with filname to the location ./zero-hit-rules-$POL2-$today-$clock.csv
   fi
   echo
 exit 0
